@@ -1,4 +1,4 @@
 # Opencoin
-This is my own cryptocurrency. 
-Market Cap : 0 $
+This is my own cryptocurrency. <br />
+Market Cap : 0 $ <br />
 Circulating Supply : 0 OPC
