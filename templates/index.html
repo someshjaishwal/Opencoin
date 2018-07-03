@@ -1,0 +1,125 @@
+<script>
+	(function() {
+	function toJSONString( form ) {
+		var obj = {};
+		var elements = form.querySelectorAll( "input, select, textarea" );
+		for( var i = 0; i < elements.length; ++i ) {
+			var element = elements[i];
+			var name = element.name;
+			var value = element.value;
+
+			if( name ) {
+				obj[ name ] = value;
+			}
+		}
+		return JSON.stringify( obj );
+	}
+	
+	
+	function sendJsonRequestAndDisplayResponse(url, json, form_name){
+		var xhr = new XMLHttpRequest();		
+		xhr.open("POST", url, true);
+		xhr.setRequestHeader("Content-Type", "application/json");
+		xhr.send(json);
+		
+		xhr.onreadystatechange = processRequest;
+		function processRequest(e) {
+			if (xhr.readyState == 4 && xhr.status == 201) {
+				var response = JSON.parse(xhr.responseText);
+				if (form_name == "transaction_form")
+					document.getElementById("transaction_response").innerHTML = response.message;
+				if (form_name == "node_form"){
+					document.getElementById("add_node_message").innerHTML = response.message;
+					document.getElementById("add_node_list_nodes").innerHTML = response.total_nodes;
+				}
+			}
+		}
+	}
+	document.addEventListener( "DOMContentLoaded", function() {
+		var tr_form = document.getElementById("transaction_form");
+		var n_form = document.getElementById("node_form");
+		var output = document.getElementById("output");
+		
+		
+		tr_form.addEventListener( "submit", function( e ) {
+			e.preventDefault();
+			var json = toJSONString( this );
+			output.innerHTML = json;
+			sendJsonRequestAndDisplayResponse(tr_form.action, json, tr_form.name)			
+		}, false);
+		
+		
+		n_form.addEventListener( "submit", function( e ) {
+			e.preventDefault();
+			var json = toJSONString( this );
+			output.innerHTML = json;
+			sendJsonRequestAndDisplayResponse(n_form.action, json, n_form.name)			
+		}, false);
+	});
+
+})();
+</script>
+
+
+<style>
+	body {
+  margin: 2em auto;
+  max-width: 800px;
+}
+form {
+	padding : 25px 25px;
+}
+form div {
+    margin-bottom: 0.5em;
+}
+form div label, form div input {
+    display: block;
+    margin-bottom: 0.3em;
+}
+#tab{
+	white-space:pre;
+}
+</style>
+<div id = "tab">
+	<p><a href="/get_chain">Get Chain</a>	|	<a href="/replace_chain">Replace the chain. </a> (if necessary)	|	<a href="/is_valid">Is chain valid ?</a>	|	<a href="/mine_block">Mine a block</a></p>
+</div>
+<hr>
+<div>
+	<p>Data sent format :</p>
+	<pre id="output"></pre>
+</div>
+<hr>
+<form id="transaction_form" name = "transaction_form" action="/add_transaction" method = "post">
+    <div class="form-group">
+        <label for="sender">Sender</label>
+        <input class="form-control" type="text" name="sender" id="sender" />
+    </div>
+	<div class="form-group">
+        <label for="receiver">Receiver</label>
+        <input class="form-control" type="text" name="receiver" id="receiver" />
+    </div>
+    <div class="form-group">
+        <label for="amount">Amount (in OPC)</label>
+        <input class="form-control" type="text" name="amount" id="amount" />
+    </div>
+    <p>
+        <input type="submit" value="Add Transaction" class="btn btn-primary btn-block" />
+    </p>
+</form>	
+<div id = "transaction_response"></div>
+<hr>
+<form id="node_form" name = "node_form" action="/add_node" method="post">
+    <div class="form-group">
+        <label for="node">Node Address</label>
+        <input class="form-control" name="node" id="node" />
+    </div>
+    <p>
+        <input type="submit" value="Add Node" class="btn btn-primary btn-block" />
+    </p>
+</form>
+<div id = "add_node_response">
+	<p id = "add_node_message"></p>
+	<p id = "add_node_list_nodes"></p>
+</div>
+<hr>
+

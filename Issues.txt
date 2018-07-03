@@ -1,0 +1,2 @@
+1. All transactions (mempools) are not available to all nodes. Transactions generated from a node is available to the same node only.
+2. All nodes are not available to all nodes. For replace_chain operation on a node, the node has to add all other connecting nodes manually to the blockchain.
